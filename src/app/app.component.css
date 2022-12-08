@@ -2,3 +2,21 @@
   display:flex;
   justify-content: space-around;
 }
+.score-group{
+  display: flex;
+  align-items: center;
+}
+.score{
+  object-fit: cover;
+  width: 36px;
+  height: 36px;
+}
+.rock {
+  object-position: 0 0;
+}
+.paper {
+  object-position: 72 0;
+}
+.scissors{
+  object-position: 144 0;
+}

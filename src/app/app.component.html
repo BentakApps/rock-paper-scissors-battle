@@ -1,11 +1,35 @@
 <p>Rock-Paper-Scissors</p>
 <div class="main">
   <div class="nav-bar">
-    <span>Rock:{{count.r}}</span>
-    <span>Paper:{{count.p}}</span>
-    <span>Scissors:{{count.s}}</span>
+    <div class="score-group">
+      <img src="assets/sprites.png" class="score rock">
+      <span>{{count.r}}</span>
+    </div>
+    <div class="score-group">
+      <img src="assets/sprites.png" class="score paper">
+      <span>{{count.p}}</span>
+    </div>
+    <div class="score-group">
+      <img src="assets/sprites.png" class="score scissors">
+      <span>{{count.s}}</span>
+    </div>
   </div>
   <div class="canvas-area">
     <app-canvas (updateCountEvent)="updateCount($event)" #canvascomponent></app-canvas>
   </div>
 </div>
+<footer>
+  <script type="text/javascript">
+    atOptions = {
+      'key' : 'eef41a07e249370304527fa6abfb2bd1',
+      'format' : 'iframe',
+      'height' : 50,
+      'width' : 320,
+      'params' : {}
+    };
+    document.write('<scr' + 'ipt type="text/javascript" src="http' + (location.protocol === 'https:' ? 's' : '') + '://www.profitabledisplayformat.com/eef41a07e249370304527fa6abfb2bd1/invoke.js"></scr' + 'ipt>');
+  </script>
+  <p>
+      © Bentak Apps, 2022 - <a href="mailto:bentak.apps@gmail.com">bentak.apps@gmail.com</a>
+  </p>
+ </footer>

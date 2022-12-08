@@ -1,4 +1,5 @@
 import { AfterContentInit, Component, ElementRef, EventEmitter, HostListener, Output, ViewChild } from '@angular/core';
+import { CanvasService } from 'src/app/service/canvas.service';
 import { TimeService } from 'src/app/service/time.service';
 import { Piece } from './element/piece.element';
 @Component({
@@ -16,25 +17,30 @@ export class CanvasComponent implements AfterContentInit {
   private pCount:number=this.numberOfPieces;
   private sCount:number=this.numberOfPieces;
   constructor(
-    private timeService:TimeService
+    private timeService:TimeService,
+    private canvasService:CanvasService
   ) {}
   ngAfterContentInit() {
     this.DISPLAY = this.canvas.nativeElement.getContext('2d', { alpha:false, desynchronized:false });
-    this.resizeCanvas(this.DISPLAY!.canvas);
-    for(let j=0;j<this.numberOfPieces;j++){
-      this.createPiece("r");
-      this.createPiece("p");
-      this.createPiece("s");
-    }
-    this.timeService.delta$?.subscribe(deltaT => this.animate(deltaT));
+    this.canvasService.spriteLoaded$.subscribe({
+      complete: () => {
+        this.canvasService.resizeCanvas(this.DISPLAY!);
+        for(let j=0;j<this.numberOfPieces;j++){
+          this.createPiece("r");
+          this.createPiece("p");
+          this.createPiece("s");
+        }
+        this.timeService.delta$?.subscribe(deltaT => this.animate(deltaT));
+      }
+    });
   }
   createPiece = (kind: "r"|"p"|"s") => {
     const randomX = Math.random() * this.DISPLAY!.canvas.width;
     const randomY = Math.random() * this.DISPLAY!.canvas.height; 
-    this.pieces.push(new Piece(kind, randomX, randomY));
+    this.pieces.push(new Piece(kind, randomX, randomY, this.canvasService));
   }
   animate(deltaT: number): void {
-    this.clearCanvas();
+    this.canvasService.clearCanvas(this.DISPLAY!);
     this.DISPLAY!.imageSmoothingEnabled = false;
     this.pieces.forEach(pc=>this.checkCollision(pc));
     this.pieces.forEach(pc=>pc.draw(deltaT/1000,this.DISPLAY!));
@@ -43,7 +49,7 @@ export class CanvasComponent implements AfterContentInit {
   checkCollision(piece:Piece){
     this.pieces.forEach(pc => {
       const dist = Math.sqrt(Math.pow(pc.x-piece.x,2)+Math.pow(pc.y-piece.y,2));
-      if(dist < 20  && this.win(pc,piece)) {
+      if(dist < 36  && this.win(pc,piece)) {
         this.defeat(piece);
       }
     });
@@ -71,22 +77,9 @@ export class CanvasComponent implements AfterContentInit {
         break;
     }
   }
-  clearCanvas() {
-    this.DISPLAY!.clearRect(0, 0, this.DISPLAY!.canvas.width, this.DISPLAY!.canvas.height);
-  }
-  resizeCanvas(canvas: HTMLCanvasElement): void {
-    let headerSize = 57;
-    let clientHeight = document.documentElement.clientHeight;
-    let clientWidth  = document.documentElement.clientWidth;
-    canvas.height = clientHeight - headerSize;
-    canvas.width = clientWidth;
-    this.DISPLAY!.textAlign = "center";
-    this.DISPLAY!.textBaseline = "middle";
-    this.DISPLAY!.font = "30px Arial";
-    this.DISPLAY!.fillStyle = "white";
-  }
+  
   @HostListener('window:resize', ['$event'])
   onResize(event:any) {
-    this.resizeCanvas(this.DISPLAY!.canvas);
+    this.canvasService.resizeCanvas(this.DISPLAY!);
   }
 }

@@ -1,4 +1,5 @@
 import { Subject } from "rxjs";
+import { CanvasService } from "src/app/service/canvas.service";
 import { AnimatedElement } from "./animatedElement.interface";
 
 export class Piece implements AnimatedElement {
@@ -10,17 +11,20 @@ export class Piece implements AnimatedElement {
   private p = String.fromCodePoint(0x1F4DC);
   private s = "\u2702";
   private border = 10;
-  
+  private canvasService;
+
   event$: Subject<any> = new Subject();
       
   constructor(
     kind:"r"|"p"|"s",
     x:number,
-    y:number
+    y:number,
+    canvasService:CanvasService
   ) { 
     this.kind = kind;
     this.x = x;
     this.y = y;
+    this.canvasService = canvasService;
   }
   draw(deltaT: number, ctx: CanvasRenderingContext2D) {
     let angle = Math.random() * 2 * Math.PI;
@@ -33,13 +37,16 @@ export class Piece implements AnimatedElement {
     this.y = this.y + this.v * Math.sin(angle) * deltaT;
     switch(this.kind) {
       case "r":
-        ctx.fillText(this.r, this.x, this.y);    
+        ctx.drawImage(this.canvasService.tile_sheet,
+          0,0,72,72,this.x-18,this.y-18,36,36);
         break;
       case "p":
-        ctx.fillText(this.p, this.x, this.y);
+        ctx.drawImage(this.canvasService.tile_sheet,
+          72,0,72,72,this.x-18,this.y-18,36,36);
         break;
       case "s":
-        ctx.fillText(this.s, this.x, this.y);
+        ctx.drawImage(this.canvasService.tile_sheet,
+          144,0,72,72,this.x-18,this.y-18,36,36);
         break;
     }
   }
