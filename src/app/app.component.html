@@ -1,0 +1,11 @@
+<p>Rock-Paper-Scissors</p>
+<div class="main">
+  <div class="nav-bar">
+    <span>Rock:{{count.r}}</span>
+    <span>Paper:{{count.p}}</span>
+    <span>Scissors:{{count.s}}</span>
+  </div>
+  <div class="canvas-area">
+    <app-canvas (updateCountEvent)="updateCount($event)" #canvascomponent></app-canvas>
+  </div>
+</div>
