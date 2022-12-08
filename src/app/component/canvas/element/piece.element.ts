@@ -6,7 +6,7 @@ export class Piece implements AnimatedElement {
   public x: number;
   public y: number;
   private v: number = 300;
-  private r = String.fromCodePoint(0x1FAA8);
+  private r = "\u270a";//String.fromCodePoint(0x1FAA8);
   private p = String.fromCodePoint(0x1F4DC);
   private s = "\u2702";
   private border = 10;

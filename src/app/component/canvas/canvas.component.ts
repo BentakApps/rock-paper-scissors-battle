@@ -83,7 +83,7 @@ export class CanvasComponent implements AfterContentInit {
     this.DISPLAY!.textAlign = "center";
     this.DISPLAY!.textBaseline = "middle";
     this.DISPLAY!.font = "30px Arial";
-    this.DISPLAY!.fillStyle = "red";
+    this.DISPLAY!.fillStyle = "white";
   }
   @HostListener('window:resize', ['$event'])
   onResize(event:any) {
