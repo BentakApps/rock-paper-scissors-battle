@@ -22,6 +22,8 @@ export class AppComponent{
   }
   restart = () => {
     this.restarting = true;
-    setTimeout(()=>this.restarting=false); 
+    setTimeout(()=>this.restarting=false);
+    this.gameOver=false;
+    this.message = "";
   }
 }
