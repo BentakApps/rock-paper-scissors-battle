@@ -14,8 +14,17 @@
       <span>{{count.s}}</span>
     </div>
   </div>
+  <div class="status">
+    {{message}}
+    <button *ngIf="gameOver" (click)="restart()">RESTART</button>
+  </div>
   <div class="canvas-area">
-    <app-canvas (updateCountEvent)="updateCount($event)" #canvascomponent></app-canvas>
+    <app-canvas
+      *ngIf="!restarting" 
+      (updateCountEvent)="updateCount($event)"
+      (messageEvent)="updateMessage($event)"
+      #canvascomponent>
+    </app-canvas>
   </div>
 </div>
 <footer>

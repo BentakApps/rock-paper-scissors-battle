@@ -1,4 +1,5 @@
 import { AfterContentInit, Component, ElementRef, EventEmitter, HostListener, Output, ViewChild } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CanvasService } from 'src/app/service/canvas.service';
 import { TimeService } from 'src/app/service/time.service';
 import { Piece } from './element/piece.element';
@@ -10,12 +11,14 @@ import { Piece } from './element/piece.element';
 export class CanvasComponent implements AfterContentInit {
   @ViewChild('canvas', { static: true }) canvas!: ElementRef<HTMLCanvasElement>;
   @Output() updateCountEvent = new EventEmitter<any>();
+  @Output() messageEvent = new EventEmitter<string>();
   private DISPLAY!: CanvasRenderingContext2D | null;
   private pieces:Piece[] = [];
   private numberOfPieces = 30;
   private rCount:number=this.numberOfPieces;
   private pCount:number=this.numberOfPieces;
   private sCount:number=this.numberOfPieces;
+  private timeSubscription!: Subscription;
   constructor(
     private timeService:TimeService,
     private canvasService:CanvasService
@@ -30,7 +33,7 @@ export class CanvasComponent implements AfterContentInit {
           this.createPiece("p");
           this.createPiece("s");
         }
-        this.timeService.delta$?.subscribe(deltaT => this.animate(deltaT));
+        this.timeSubscription = this.timeService.delta$?.subscribe(deltaT => this.animate(deltaT));
       }
     });
   }
@@ -76,6 +79,19 @@ export class CanvasComponent implements AfterContentInit {
         this.rCount++;
         break;
     }
+    if(this.pCount == 0 && this.sCount == 0){
+      this.gameOver("ROCK WON!");
+    }
+    if(this.rCount == 0 && this.sCount == 0){
+      this.gameOver("PAPER WON!");
+    }
+    if(this.rCount == 0 && this.pCount == 0){
+      this.gameOver("SCISSORS WON!");
+    }
+  }
+  gameOver = (message: string) => {
+    this.messageEvent.emit(message);
+    this.timeSubscription.unsubscribe();
   }
   
   @HostListener('window:resize', ['$event'])

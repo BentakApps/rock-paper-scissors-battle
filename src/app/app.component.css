@@ -15,8 +15,15 @@
   object-position: 0 0;
 }
 .paper {
-  object-position: 72 0;
+  object-position: -36px 0px;
 }
 .scissors{
-  object-position: 144 0;
+  object-position: -72px 0px;
+}
+.status{
+  height:30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
 }
