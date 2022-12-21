@@ -1,8 +1,10 @@
-import { AfterContentInit, Component, ElementRef, EventEmitter, HostListener, Output, ViewChild } from '@angular/core';
+import { AfterContentInit, Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CanvasService } from 'src/app/service/canvas.service';
 import { TimeService } from 'src/app/service/time.service';
-import { Piece } from './element/piece.element';
+import { BouncingPiece } from './element/bouncingPiece.element';
+import { NoisePiece } from './element/noisePiece.element';
+import { Piece } from './element/piece.interface';
 @Component({
   selector: 'app-canvas',
   templateUrl: './canvas.component.html',
@@ -10,6 +12,8 @@ import { Piece } from './element/piece.element';
 })
 export class CanvasComponent implements AfterContentInit {
   @ViewChild('canvas', { static: true }) canvas!: ElementRef<HTMLCanvasElement>;
+  @Input() mode!: "noise" | "bounce";
+  @Input() onDefeat!: "replace" | "delete";
   @Output() updateCountEvent = new EventEmitter<any>();
   @Output() messageEvent = new EventEmitter<string>();
   private DISPLAY!: CanvasRenderingContext2D | null;
@@ -38,24 +42,45 @@ export class CanvasComponent implements AfterContentInit {
     });
   }
   createPiece = (kind: "r"|"p"|"s") => {
-    const randomX = Math.random() * this.DISPLAY!.canvas.width;
-    const randomY = Math.random() * this.DISPLAY!.canvas.height; 
-    this.pieces.push(new Piece(kind, randomX, randomY, this.canvasService));
+    switch(this.mode){
+      case "noise":
+        this.pieces.push(new NoisePiece(kind, this.DISPLAY!.canvas.width, this.DISPLAY!.canvas.height, this.canvasService));
+        break;
+      case "bounce":
+        this.pieces.push(new BouncingPiece(kind, this.DISPLAY!.canvas.width, this.DISPLAY!.canvas.height, this.canvasService));
+        break;
+    }
   }
   animate(deltaT: number): void {
     this.canvasService.clearCanvas(this.DISPLAY!);
     this.DISPLAY!.imageSmoothingEnabled = false;
-    this.pieces.forEach(pc=>this.checkCollision(pc));
+    this.checkCollisions();
+    //this.pieces.forEach(pc=>this.checkCollision(pc));
     this.pieces.forEach(pc=>pc.draw(deltaT/1000,this.DISPLAY!));
     this.updateCountEvent.emit({r:this.rCount,p:this.pCount,s:this.sCount});
   }
-  checkCollision(piece:Piece){
-    this.pieces.forEach(pc => {
-      const dist = Math.sqrt(Math.pow(pc.x-piece.x,2)+Math.pow(pc.y-piece.y,2));
-      if(dist < 36  && this.win(pc,piece)) {
-        this.defeat(piece);
+  checkCollisions(){
+    let i = this.pieces.length - 1;
+    while(i >= 0){
+      let piece = this.pieces[i];
+      let j = this.pieces.length - 1;
+      while(j >= 0){
+        if(i != j){
+          let pc = this.pieces[j];
+          const dist = Math.sqrt(Math.pow(pc.x-piece.x,2)+Math.pow(pc.y-piece.y,2));
+          if(dist < 36  && this.win(pc,piece)) {
+            console.log(i);
+            console.log(this.pieces);
+            console.log(pc);
+            console.log(piece);
+            this.defeat(piece);
+            j=0;
+          }
+        }
+        j--;
       }
-    });
+      i--;
+    }
   }
   win = (p1:Piece, p2:Piece)=> 
     p1.kind=="r" && p2.kind=="s" || 
@@ -64,20 +89,29 @@ export class CanvasComponent implements AfterContentInit {
   defeat = (pc:Piece) => {
     switch(pc.kind) {
       case "r":
-        pc.kind="p";
         this.rCount--;
-        this.pCount++;
+        if(this.onDefeat=="replace"){
+          pc.kind="p";
+          this.pCount++;
+        }
         break;
       case "p":
-        pc.kind="s";
         this.pCount--;
-        this.sCount++;
+        if(this.onDefeat=="replace"){
+          pc.kind="s";
+          this.sCount++;
+        }
         break;
       case "s":
-        pc.kind="r";
         this.sCount--;
-        this.rCount++;
+        if(this.onDefeat=="replace"){
+          pc.kind="r";
+          this.rCount++;
+        }
         break;
+    }
+    if(this.onDefeat=="delete"){
+      this.pieces.splice(this.pieces.indexOf(pc),1);
     }
     if(this.pCount == 0 && this.sCount == 0){
       this.gameOver("ROCK WON!");
@@ -93,7 +127,6 @@ export class CanvasComponent implements AfterContentInit {
     this.messageEvent.emit(message);
     this.timeSubscription.unsubscribe();
   }
-  
   @HostListener('window:resize', ['$event'])
   onResize(event:any) {
     this.canvasService.resizeCanvas(this.DISPLAY!);

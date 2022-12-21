@@ -1,6 +1,6 @@
-<p>Rock-Paper-Scissors</p>
-<div class="main">
-  <div class="nav-bar">
+<div class="header">
+  <h2 style="margin-top:5px;">Rock-Paper-Scissors</h2>
+  <div class="score-bar">
     <div class="score-group">
       <img src="assets/sprites.png" class="score rock">
       <span>{{count.r}}</span>
@@ -15,30 +15,42 @@
     </div>
   </div>
   <div class="status">
-    {{message}}
-    <button *ngIf="gameOver" (click)="restart()">RESTART</button>
-  </div>
-  <div class="canvas-area">
-    <app-canvas
-      *ngIf="!restarting" 
-      (updateCountEvent)="updateCount($event)"
-      (messageEvent)="updateMessage($event)"
-      #canvascomponent>
-    </app-canvas>
+    <div class="modes">
+      Mode:
+      <mat-radio-group 
+      aria-label="Select an option"
+      [(ngModel)]="mode"
+      (change)="restart()">
+        <mat-radio-button value="noise">Noise</mat-radio-button>
+        <mat-radio-button value="bounce">Bounce</mat-radio-button>
+      </mat-radio-group>
+    </div>
+    <div class="defeated">
+      Defeated piece will be:
+      <mat-radio-group 
+      aria-label="Select an option"
+      [(ngModel)]="onDefeat"
+      (change)="restart()">
+        <mat-radio-button value="replace">Replaced</mat-radio-button>
+        <mat-radio-button value="delete">Deleted</mat-radio-button>
+      </mat-radio-group>
+    </div>
   </div>
 </div>
-<footer>
-  <script type="text/javascript">
-    atOptions = {
-      'key' : 'eef41a07e249370304527fa6abfb2bd1',
-      'format' : 'iframe',
-      'height' : 50,
-      'width' : 320,
-      'params' : {}
-    };
-    document.write('<scr' + 'ipt type="text/javascript" src="http' + (location.protocol === 'https:' ? 's' : '') + '://www.profitabledisplayformat.com/eef41a07e249370304527fa6abfb2bd1/invoke.js"></scr' + 'ipt>');
-  </script>
-  <p>
+<div class="canvas-area">
+  <app-canvas
+    *ngIf="!restarting" 
+    (updateCountEvent)="updateCount($event)"
+    (messageEvent)="updateMessage($event)"
+    [mode]="mode"
+    [onDefeat]="onDefeat"
+      #canvascomponent>
+  </app-canvas>
+</div>
+<footer *ngIf="!restarting" >
+  <!-- <iframe src="//www.profitabledisplayformat.com/watchnew?key=eef41a07e249370304527fa6abfb2bd1" width="320" height="50" frameborder="0" scrolling="no"></iframe> -->
+  <iframe src="//fierysolemncow.com/watchnew?key=eef41a07e249370304527fa6abfb2bd1" width="320" height="50" frameborder="0" scrolling="no"></iframe>
+  <p style="font-size:.5em">
       © Bentak Apps, 2022 - <a href="mailto:bentak.apps@gmail.com">bentak.apps@gmail.com</a>
   </p>
  </footer>

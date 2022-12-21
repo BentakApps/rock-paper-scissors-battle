@@ -1,29 +1,27 @@
 import { Subject } from "rxjs";
 import { CanvasService } from "src/app/service/canvas.service";
 import { AnimatedElement } from "./animatedElement.interface";
+import { Piece } from "./piece.interface";
 
-export class Piece implements AnimatedElement {
+export class NoisePiece implements Piece {
   public kind!: "r" | "p" | "s";
   public x: number;
   public y: number;
   private v: number = 300;
-  private r = "\u270a";//String.fromCodePoint(0x1FAA8);
-  private p = String.fromCodePoint(0x1F4DC);
-  private s = "\u2702";
-  private border = 10;
+  private border = 18;
   private canvasService;
 
   event$: Subject<any> = new Subject();
       
   constructor(
     kind:"r"|"p"|"s",
-    x:number,
-    y:number,
+    width:number,
+    height:number,
     canvasService:CanvasService
   ) { 
     this.kind = kind;
-    this.x = x;
-    this.y = y;
+    this.x = Math.random() * width;
+    this.y = Math.random() * height; 
     this.canvasService = canvasService;
   }
   draw(deltaT: number, ctx: CanvasRenderingContext2D) {

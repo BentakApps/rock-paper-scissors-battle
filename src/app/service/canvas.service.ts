@@ -15,13 +15,13 @@ export class CanvasService {
     }
   }
   resizeCanvas(ctx: CanvasRenderingContext2D): void {
-    let headerSize = 57;
-    let footerSize = 100;
+    let headerSize = 170;
+    let footerSize = 50+12;
     let clientHeight = document.documentElement.clientHeight;
-    let clientWidth  = document.documentElement.clientWidth;
+    let clientWidth  = document.documentElement.clientWidth*.95;
     
-    ctx.canvas.height = clientHeight - headerSize - footerSize;
-    ctx.canvas.width = clientWidth;
+    ctx.canvas.height = clientHeight - headerSize - footerSize - 1;
+    ctx.canvas.width = clientWidth - 1;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font = "30px Arial";
