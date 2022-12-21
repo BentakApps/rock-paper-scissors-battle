@@ -42,28 +42,41 @@ export class CanvasComponent implements AfterContentInit {
     });
   }
   createPiece = (kind: "r"|"p"|"s") => {
+    let newPiece:Piece;
     switch(this.mode){
       case "noise":
-        this.pieces.push(
-          new NoisePiece(
+        do {
+          newPiece = new NoisePiece(
             kind,
             this.DISPLAY!.canvas.width,
             this.DISPLAY!.canvas.height,
             this.canvasService
-          )
-        );
+          );
+        } while(this.clash(newPiece));
         break;
       case "bounce":
-        this.pieces.push(
-          new BouncingPiece(
+        do {  
+          newPiece = new BouncingPiece(
             kind,
             this.DISPLAY!.canvas.width,
             this.DISPLAY!.canvas.height,
             this.canvasService
-          )
-        );
+          );
+        } while(this.clash(newPiece));
         break;
     }
+    this.pieces.push(newPiece);
+  }
+  clash(piece:Piece):boolean{
+    let index = this.pieces.length -1;
+    while(index>=0){
+      let pc = this.pieces[index];
+      if(this.distance(pc,piece)<36 && pc.kind!=piece.kind) {
+        return true;
+      }
+      index--;
+    }
+    return false;
   }
   animate(deltaT: number): void {
     this.canvasService.clearCanvas(this.DISPLAY!);
@@ -81,12 +94,7 @@ export class CanvasComponent implements AfterContentInit {
       while(j >= 0){
         if(i != j){
           let pc = this.pieces[j];
-          const dist = Math.sqrt(Math.pow(pc.x-piece.x,2)+Math.pow(pc.y-piece.y,2));
-          if(dist < 36  && this.win(pc,piece)) {
-            console.log(i);
-            console.log(this.pieces);
-            console.log(pc);
-            console.log(piece);
+          if(this.distance(pc,piece) < 36  && this.win(pc,piece)) {
             this.defeat(piece);
             j=0;
           }
@@ -96,6 +104,8 @@ export class CanvasComponent implements AfterContentInit {
       i--;
     }
   }
+  distance = (p1:Piece, p2:Piece) => 
+    Math.sqrt(Math.pow(p1.x-p2.x,2)+Math.pow(p1.y-p2.y,2));
   win = (p1:Piece, p2:Piece)=> 
     p1.kind=="r" && p2.kind=="s" || 
     p1.kind=="p" && p2.kind=="r" ||
