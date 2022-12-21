@@ -9,10 +9,9 @@ export class BouncingPiece implements Piece {
   private v: number = 100;
   private vx:number;
   private vy:number;
-  private spriteSize:number = 36;
-  private canvasService;
-  private baseScale:number = 500;
+  private spriteSize:number;
   private scale:number;
+  private canvasService;
 
   event$: Subject<any> = new Subject();
       
@@ -20,10 +19,13 @@ export class BouncingPiece implements Piece {
     kind:"r"|"p"|"s",
     width:number,
     height:number,
+    scale:number,
+    spriteSize:number,
     canvasService:CanvasService
   ) { 
     this.kind = kind;
-    this.scale = Math.min(height, width) / this.baseScale;
+    this.scale = scale;
+    this.spriteSize = spriteSize;
     this.x = this.spriteSize/2 + Math.random() * (width-this.spriteSize);
     this.y = this.spriteSize/2 + Math.random() * (height-this.spriteSize);
     const angle = Math.random() * 2 * Math.PI;

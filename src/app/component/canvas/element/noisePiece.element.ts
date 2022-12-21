@@ -8,10 +8,9 @@ export class NoisePiece implements Piece {
   public x: number;
   public y: number;
   private v: number = 300;
-  private canvasService;
-  private spriteSize:number = 36;
-  private baseScale:number = 500;
+  private spriteSize:number;
   private scale:number;
+  private canvasService;
 
   event$: Subject<any> = new Subject();
       
@@ -19,10 +18,13 @@ export class NoisePiece implements Piece {
     kind:"r"|"p"|"s",
     width:number,
     height:number,
+    scale:number,
+    spriteSize:number,
     canvasService:CanvasService
   ) { 
     this.kind = kind;
-    this.scale = Math.min(height, width) / this.baseScale;
+    this.scale = scale;
+    this.spriteSize = spriteSize;
     this.x = Math.random() * width;
     this.y = Math.random() * height; 
     this.canvasService = canvasService;

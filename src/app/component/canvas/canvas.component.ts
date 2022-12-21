@@ -19,6 +19,9 @@ export class CanvasComponent implements AfterContentInit {
   private DISPLAY!: CanvasRenderingContext2D | null;
   private pieces:Piece[] = [];
   private numberOfPieces = 30;
+  private scale!: number;
+  private baseScale = 500;
+  private spriteSize = 36;
   private rCount:number=this.numberOfPieces;
   private pCount:number=this.numberOfPieces;
   private sCount:number=this.numberOfPieces;
@@ -32,6 +35,10 @@ export class CanvasComponent implements AfterContentInit {
     this.canvasService.spriteLoaded$.subscribe({
       complete: () => {
         this.canvasService.resizeCanvas(this.DISPLAY!);
+        this.scale = Math.min(
+          this.DISPLAY!.canvas.height,
+          this.DISPLAY!.canvas.width
+        ) / this.baseScale;
         for(let j=0;j<this.numberOfPieces;j++){
           this.createPiece("r");
           this.createPiece("p");
@@ -50,6 +57,8 @@ export class CanvasComponent implements AfterContentInit {
             kind,
             this.DISPLAY!.canvas.width,
             this.DISPLAY!.canvas.height,
+            this.scale,
+            this.spriteSize,
             this.canvasService
           );
         } while(this.clash(newPiece));
@@ -60,6 +69,8 @@ export class CanvasComponent implements AfterContentInit {
             kind,
             this.DISPLAY!.canvas.width,
             this.DISPLAY!.canvas.height,
+            this.scale,
+            this.spriteSize,
             this.canvasService
           );
         } while(this.clash(newPiece));
@@ -71,7 +82,7 @@ export class CanvasComponent implements AfterContentInit {
     let index = this.pieces.length -1;
     while(index>=0){
       let pc = this.pieces[index];
-      if(this.distance(pc,piece)<36 && pc.kind!=piece.kind) {
+      if(this.distance(pc,piece)<this.spriteSize * this.scale && pc.kind!=piece.kind) {
         return true;
       }
       index--;
@@ -82,7 +93,6 @@ export class CanvasComponent implements AfterContentInit {
     this.canvasService.clearCanvas(this.DISPLAY!);
     this.DISPLAY!.imageSmoothingEnabled = false;
     this.checkCollisions();
-    //this.pieces.forEach(pc=>this.checkCollision(pc));
     this.pieces.forEach(pc=>pc.draw(deltaT/1000,this.DISPLAY!));
     this.updateCountEvent.emit({r:this.rCount,p:this.pCount,s:this.sCount});
   }
@@ -94,7 +104,7 @@ export class CanvasComponent implements AfterContentInit {
       while(j >= 0){
         if(i != j){
           let pc = this.pieces[j];
-          if(this.distance(pc,piece) < 36  && this.win(pc,piece)) {
+          if(this.distance(pc,piece) < this.spriteSize * this.scale  && this.win(pc,piece)) {
             this.defeat(piece);
             j=0;
           }
@@ -154,5 +164,9 @@ export class CanvasComponent implements AfterContentInit {
   @HostListener('window:resize', ['$event'])
   onResize(event:any) {
     this.canvasService.resizeCanvas(this.DISPLAY!);
+    this.scale = Math.min(
+      this.DISPLAY!.canvas.height,
+      this.DISPLAY!.canvas.width
+    ) / this.baseScale;
   }
 }
