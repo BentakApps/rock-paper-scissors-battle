@@ -34,11 +34,14 @@ export class BouncingPiece implements Piece {
     this.canvasService = canvasService;
   }
   draw(deltaT: number, ctx: CanvasRenderingContext2D) {
-    if(this.x < this.spriteSize/2*this.scale || 
-      this.x > ctx.canvas.width - this.spriteSize/2*this.scale) this.vx = -this.vx;
-    if(this.y < this.spriteSize/2*this.scale ||
-      this.y > ctx.canvas.height - this.spriteSize/2*this.scale) this.vy = -this.vy;
-
+    if((this.x < this.spriteSize/2*this.scale && this.vx < 0) || 
+    (this.x > ctx.canvas.width - this.spriteSize/2*this.scale && this.vx > 0)) {
+      this.vx = -this.vx;
+    }      
+    if((this.y < this.spriteSize/2*this.scale && this.vy < 0) ||
+    (this.y > ctx.canvas.height - this.spriteSize/2*this.scale && this.vy > 0)) {
+      this.vy = -this.vy;
+    }
     this.x = this.x + this.vx *this.scale * deltaT;
     this.y = this.y + this.vy *this.scale * deltaT;
     switch(this.kind) {
