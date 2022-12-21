@@ -11,6 +11,8 @@ export class BouncingPiece implements Piece {
   private vy:number;
   private spriteSize:number = 36;
   private canvasService;
+  private baseScale:number = 500;
+  private scale:number;
 
   event$: Subject<any> = new Subject();
       
@@ -21,6 +23,7 @@ export class BouncingPiece implements Piece {
     canvasService:CanvasService
   ) { 
     this.kind = kind;
+    this.scale = Math.min(height, width) / this.baseScale;
     this.x = this.spriteSize/2 + Math.random() * (width-this.spriteSize);
     this.y = this.spriteSize/2 + Math.random() * (height-this.spriteSize);
     const angle = Math.random() * 2 * Math.PI;
@@ -29,28 +32,28 @@ export class BouncingPiece implements Piece {
     this.canvasService = canvasService;
   }
   draw(deltaT: number, ctx: CanvasRenderingContext2D) {
-    if(this.x < this.spriteSize/2 || 
-      this.x > ctx.canvas.width - this.spriteSize/2) this.vx = -this.vx;
-    if(this.y < this.spriteSize/2 ||
-      this.y > ctx.canvas.height - this.spriteSize/2) this.vy = -this.vy;
+    if(this.x < this.spriteSize/2*this.scale || 
+      this.x > ctx.canvas.width - this.spriteSize/2*this.scale) this.vx = -this.vx;
+    if(this.y < this.spriteSize/2*this.scale ||
+      this.y > ctx.canvas.height - this.spriteSize/2*this.scale) this.vy = -this.vy;
 
-    this.x = this.x + this.vx * deltaT;
-    this.y = this.y + this.vy * deltaT;
+    this.x = this.x + this.vx *this.scale * deltaT;
+    this.y = this.y + this.vy *this.scale * deltaT;
     switch(this.kind) {
       case "r":
         ctx.drawImage(this.canvasService.tile_sheet,0,0,72,72,
-          this.x-this.spriteSize/2,this.y-this.spriteSize/2,
-          this.spriteSize,this.spriteSize);
+          this.x-this.spriteSize/2*this.scale,this.y-this.spriteSize/2*this.scale,
+          this.spriteSize*this.scale,this.spriteSize*this.scale);
         break;
       case "p":
         ctx.drawImage(this.canvasService.tile_sheet,72,0,72,72,
-          this.x-this.spriteSize/2,this.y-this.spriteSize/2,
-          this.spriteSize,this.spriteSize);
+          this.x-this.spriteSize/2*this.scale,this.y-this.spriteSize/2*this.scale,
+          this.spriteSize*this.scale,this.spriteSize*this.scale);
         break;
       case "s":
         ctx.drawImage(this.canvasService.tile_sheet,144,0,72,72,
-          this.x-this.spriteSize/2,this.y-this.spriteSize/2,
-          this.spriteSize,this.spriteSize);
+          this.x-this.spriteSize/2*this.scale,this.y-this.spriteSize/2*this.scale,
+          this.spriteSize*this.scale,this.spriteSize*this.scale);
         break;
     }
   }

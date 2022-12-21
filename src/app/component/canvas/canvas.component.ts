@@ -44,10 +44,24 @@ export class CanvasComponent implements AfterContentInit {
   createPiece = (kind: "r"|"p"|"s") => {
     switch(this.mode){
       case "noise":
-        this.pieces.push(new NoisePiece(kind, this.DISPLAY!.canvas.width, this.DISPLAY!.canvas.height, this.canvasService));
+        this.pieces.push(
+          new NoisePiece(
+            kind,
+            this.DISPLAY!.canvas.width,
+            this.DISPLAY!.canvas.height,
+            this.canvasService
+          )
+        );
         break;
       case "bounce":
-        this.pieces.push(new BouncingPiece(kind, this.DISPLAY!.canvas.width, this.DISPLAY!.canvas.height, this.canvasService));
+        this.pieces.push(
+          new BouncingPiece(
+            kind,
+            this.DISPLAY!.canvas.width,
+            this.DISPLAY!.canvas.height,
+            this.canvasService
+          )
+        );
         break;
     }
   }
